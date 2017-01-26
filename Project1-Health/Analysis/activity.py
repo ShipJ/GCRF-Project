@@ -8,6 +8,8 @@
 #     to real towers; they are just never active. I try to discard as many of these as possible in the subsequent
 #     processing stage. I also remove towers that become active after months of inactivity.
 
+# Added a comment
+
 import pandas as pd
 import numpy as np
 import math
