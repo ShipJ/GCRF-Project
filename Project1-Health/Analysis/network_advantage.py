@@ -115,28 +115,32 @@ if __name__ == "__main__":
         out = np.sum(np.delete(adj_matrix[i, :], i))
         introversion[i] = (adj_matrix[i, i] / out) if out > 0 else 0
 
+    IntersectPop = pd.DataFrame(
+        pd.read_csv("/Users/JackShipway/Desktop/UCLProject/Project1-Health/Data/Temporary/IvoryCoastIntersectPop.csv"))
 
-    IntersectPop = pd.DataFrame(pd.read_csv("/Users/JackShipway/Desktop/UCLProject/Project1-Health/Data/Temporary/IvoryCoastIntersectPop.csv"))
-    
     adm_1_pop = IntersectPop.groupby('Adm_1')['Pop_2010'].sum().reset_index()
     adm_2_pop = IntersectPop.groupby('Adm_2')['Pop_2010'].sum().reset_index()
     adm_3_pop = IntersectPop.groupby('Adm_3')['Pop_2010'].sum().reset_index()
     adm_4_pop = IntersectPop.groupby('Adm_4')['Pop_2010'].sum().reset_index()
-    
-    cell_tower_adm = pd.DataFrame(pd.read_csv(path+"/Essential/CellTower_Adm_1234.csv"))
+
+    cell_tower_adm = pd.DataFrame(pd.read_csv(path + "/Essential/CellTower_Adm_1234.csv"))
     list = np.array(cell_tower_adm['CellTowerID'])
     introversion = introversion[list]
     cell_tower_adm['introversion'] = introversion
-    
+
     cell_towers_adm_1 = cell_tower_adm.groupby('ID_1')['ID_1'].count().reset_index(drop=True)
     cell_towers_adm_2 = cell_tower_adm.groupby('ID_2')['ID_2'].count().reset_index(drop=True)
     cell_towers_adm_3 = cell_tower_adm.groupby('ID_3')['ID_3'].count().reset_index(drop=True)
     cell_towers_adm_4 = cell_tower_adm.groupby('ID_4')['ID_4'].count().reset_index(drop=True)
 
-    introversion_adm_1 = cell_tower_adm.groupby('ID_1')['introversion'].sum().reset_index()['introversion'] * (adm_1_pop['Pop_2010'] / cell_towers_adm_1)
-    introversion_adm_2 = cell_tower_adm.groupby('ID_2')['introversion'].sum().reset_index()['introversion'] * (adm_2_pop['Pop_2010'] / cell_towers_adm_2)
-    introversion_adm_3 = cell_tower_adm.groupby('ID_3')['introversion'].sum().reset_index()['introversion'] * (adm_3_pop['Pop_2010'] / cell_towers_adm_3)
-    introversion_adm_4 = cell_tower_adm.groupby('ID_4')['introversion'].sum().reset_index()['introversion'] * (adm_4_pop['Pop_2010'] / cell_towers_adm_4)
+    introversion_adm_1 = cell_tower_adm.groupby('ID_1')['introversion'].sum().reset_index()['introversion'] * (
+    adm_1_pop['Pop_2010'] / cell_towers_adm_1)
+    introversion_adm_2 = cell_tower_adm.groupby('ID_2')['introversion'].sum().reset_index()['introversion'] * (
+    adm_2_pop['Pop_2010'] / cell_towers_adm_2)
+    introversion_adm_3 = cell_tower_adm.groupby('ID_3')['introversion'].sum().reset_index()['introversion'] * (
+    adm_3_pop['Pop_2010'] / cell_towers_adm_3)
+    introversion_adm_4 = cell_tower_adm.groupby('ID_4')['introversion'].sum().reset_index()['introversion'] * (
+    adm_4_pop['Pop_2010'] / cell_towers_adm_4)
 
     np.savetxt("introversion_adm_1.csv", introversion_adm_1, delimiter=',')
     np.savetxt("introversion_adm_2.csv", introversion_adm_2, delimiter=',')
