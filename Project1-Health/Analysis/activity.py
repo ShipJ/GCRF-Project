@@ -11,10 +11,10 @@ import math
 
 if __name__ == "__main__":
 
-    path = "/Users/JackShipway/Desktop/UCLProject"
-
     # country = sys.argv[1]
     country = 'Senegal'
+
+    path = '/Users/JackShipway/Desktop/UCLProject/Data/%s/CDR'
 
     # Set known data set values (number of towers, and time length of data)
     if country == 'Senegal':
@@ -33,11 +33,11 @@ if __name__ == "__main__":
 
     # Sum output for each cell tower, for each hour of data
     for hour in range(hours):
-        print "Reading Hour: %s" % hour, m, w, d, h
+        print 'Reading Hour: %s' % hour, m, w, d, h
 
         # Read the temporal data sets in turn, convert to multi-dimensional array
-        data = pd.read_csv(path+"/Data/%s/CDR/Temporal/Month_%s/Week_%s/Day_%s/Hour_%s/graph.csv" % (country, m, w, d, h),
-                           usecols=["source", "target", "volume", "duration"]).as_matrix()
+        data = pd.read_csv(path+'/Data/Month_%s/Week_%s/Day_%s/Hour_%s/graph.csv' % (m, w, d, h),
+                           usecols=['source', 'target', 'volume', 'duration']).as_matrix()
 
         # Only update cell towers active within that time-step
         active_towers = np.array(np.unique(np.concatenate([data[:, 0], data[:, 1]])))
@@ -79,7 +79,7 @@ if __name__ == "__main__":
                     m += 1
 
     total_activity = pd.DataFrame()
-    total_activity['ID'] = np.array(range(1668))
+    total_activity['ID'] = np.array(range(num_bts))
     total_activity['Vol'] = volume_total
     total_activity['Vol_in'] = volume_in
     total_activity['Vol_out'] = volume_out
@@ -88,4 +88,4 @@ if __name__ == "__main__":
     total_activity['Dur_out'] = duration_out
 
     # # Save results
-    # total_activity.to_csv("total_activity.csv", index=None)
+    # total_activity.to_csv(path+'StaticMetrics/Activity/total_activity.csv', index=None)
