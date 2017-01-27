@@ -1,4 +1,4 @@
-# Compute the adjacency matrix for data activity metrics
+# Compute the adjacency matrix, degree vector, q_matrix and log(q_matrix) for data activity metrics
 
 # Input: CDR temporal data sets
 # Output: Adjacency matrix containing the total volume of activity between pairs of cell towers
@@ -12,7 +12,7 @@ if __name__ == "__main__":
 
     # country = sys.argv[1]
     country = 'IvoryCoast'
-    path = '/Users/JackShipway/Desktop/UCLProject/Data/%s/CDR/Temporal' % country
+    path = '/Users/JackShipway/Desktop/UCLProject/Data/%s/CDR' % country
 
     # Set known data set values (number of towers, hourly duration of data)
     if country == 'Senegal':
@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     # Cycle through all files, update adjacency matrix
     for hour in range(hours):
-        f = path+'/Month_%s/Week_%s/Day_%s/Hour_%s/graph.csv' % (m, w, d, h)
+        f = path+'/Data/Month_%s/Week_%s/Day_%s/Hour_%s/graph.csv' % (m, w, d, h)
 
         if os.path.isfile(f):
             print 'Reading Data Set: %s' % hour, '--- ' 'm:', m, 'w:', w, 'd:', d, 'h:', h
@@ -51,5 +51,28 @@ if __name__ == "__main__":
                     if w == 0:
                         m += 1
 
-    # np.savetxt('adj_matrix.csv', adj_matrix, delimiter=',')
+    total_activity = np.genfromtxt(path + "/StaticMetrics/Activity/total_activity.csv", delimiter=',', skiprows=1)
 
+    # Compute q_matrix
+    q_matrix = np.array(adj_matrix / total_activity[:, 1, None])
+
+    # Compute degree vector
+    deg_vector = np.zeros(1240)
+    for i in range(1240):
+        out_deg = np.where(adj_matrix[i, :] != 0)
+        in_deg = np.where(adj_matrix[:, i] != 0)
+        self_deg = 0 if adj_matrix[i, i] == 0 else 1
+        deg_vector[i] = len(np.union1d(out_deg[0], in_deg[0])) - self_deg
+
+    # Compute log(q_matrix)
+    where_nan = np.isnan(q_matrix)
+    q_matrix[where_nan] = 0
+    def f(x):
+        return x * np.log10(x)
+    f = np.vectorize(f)
+    log_q_matrix = f(q_matrix)
+
+    # np.savetxt(path+'/StaticMetrics/Other/adj_matrix.csv', adj_matrix, delimiter=',')
+    # np.savetxt(path+'/StaticMetrics/Other/deg_vector.csv', deg_vector, delimiter=',')
+    # np.savetxt(path+'/StaticMetrics/Other/q_matrix.csv', q_matrix, delimiter=',')
+    # np.savetxt(path+'/StaticMetrics/Other/log_q_matrix.csv', log_q_matrix, delimiter=',')

@@ -1,13 +1,30 @@
+''' Two Network Advantage metrics: 1. Median degree, 2. Normalised Entropy '''
+# Input:
+# Output:
+
 import pandas as pd
 import numpy as np
-import math
 import sys
-import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
 
+    # country = sys.argv[1]
+    country = 'Senegal'
+
+    path = "/Users/JackShipway/Desktop/UCLProject/Data/%s" % country
+
+    # Set known data set values (number of towers, and time length of data)
+    if country == 'Senegal':
+        num_bts, hours = 1668, 8760
+    elif country == 'IvoryCoast':
+        num_bts, hours = 1240, 3360
+    else:
+        num_bts, hours = 10000, 100000
+
+    total_activity = np.genfromtxt(path + "/CDR/Metrics/total_activity.csv", delimiter=',', skiprows=1)
+    adj_matrix = np.genfromtxt(path+'/CDR/StaticMetrics/Other/adj_matrix.csv', delimiter=',')
+
     ''' Median Degree '''
-    adj_matrix = np.genfromtxt("adj_matrix.csv", delimiter=',')
 
     for i in range(1240):
         row_col = np.concatenate((adj_matrix[i, :], adj_matrix[:, i]))
@@ -26,40 +43,6 @@ if __name__ == "__main__":
         in_deg_matrix[i] = np.sum(adj_matrix[i, :])
         out_deg_matrix[i] = np.sum(adj_matrix[:, i])
 
-    # # Distribution of total, in and out degrees of each node
-    # plt.plot(range(1240), sorted(total_deg_matrix), c='b')
-    # plt.plot(range(1240), sorted(in_deg_matrix), c='r')
-    # plt.plot(range(1240), sorted(out_deg_matrix), c='g')
-    # plt.show()
-
-
-    ''' Q_matrix '''
-    path = '/Users/JackShipway/Desktop/UCLProject/Project1-Health/Data/IvoryCoast'
-    # adj_matrix = np.genfromtxt("adj_matrix.csv", delimiter=',')
-    # total_activity = np.genfromtxt(path+"/CDR/Metrics/total_activity.csv", delimiter=',', skiprows=1)
-
-    # # Computing the q_matrix and degree vector
-    # q_matrix = np.array(adj_matrix / total_activity[:, 1, None])
-    # deg_vector = np.zeros(1240)
-    # for i in range(1240):
-    #     out_deg = np.where(adj_matrix[i, :] != 0)
-    #     in_deg = np.where(adj_matrix[:, i] != 0)
-    #     self_deg = 0 if adj_matrix[i, i] == 0 else 1
-    #     deg_vector[i] = len(np.union1d(out_deg[0], in_deg[0])) - self_deg
-    #
-    # np.savetxt("q_matrix.csv", q_matrix, delimiter=',')
-    # np.savetxt("deg_vector.csv", deg_vector, delimiter=',')
-
-    # # Compute q_log
-    # q_matrix = np.genfromtxt("q_matrix.csv", delimiter=',')
-    # where_nan = np.isnan(q_matrix)
-    # q_matrix[where_nan] = 0
-    #
-    # def f(x):
-    #     return x * np.log10(x)
-    # f = np.vectorize(f)
-    # q_log = f(q_matrix)
-    # np.savetxt("q_log.csv", q_log, delimiter=',')
 
 
     ''' Normalised Entropy '''
@@ -106,15 +89,6 @@ if __name__ == "__main__":
     # np.savetxt("entropy_adm_3.csv", entropy_adm_3, delimiter=',')
     # np.savetxt("entropy_adm_4.csv", entropy_adm_4, delimiter=',')
 
-    ''' Introversion '''
-
-    adj_matrix = np.genfromtxt("adj_matrix.csv", delimiter=',')
-
-    introversion = np.zeros(1240)
-    for i in range(1240):
-        out = np.sum(np.delete(adj_matrix[i, :], i))
-        introversion[i] = (adj_matrix[i, i] / out) if out > 0 else 0
-
     IntersectPop = pd.DataFrame(
         pd.read_csv("/Users/JackShipway/Desktop/UCLProject/Project1-Health/Data/Temporary/IvoryCoastIntersectPop.csv"))
 
@@ -124,33 +98,8 @@ if __name__ == "__main__":
     adm_4_pop = IntersectPop.groupby('Adm_4')['Pop_2010'].sum().reset_index()
 
     cell_tower_adm = pd.DataFrame(pd.read_csv(path + "/Essential/CellTower_Adm_1234.csv"))
-    list = np.array(cell_tower_adm['CellTowerID'])
-    introversion = introversion[list]
-    cell_tower_adm['introversion'] = introversion
 
-    cell_towers_adm_1 = cell_tower_adm.groupby('ID_1')['ID_1'].count().reset_index(drop=True)
-    cell_towers_adm_2 = cell_tower_adm.groupby('ID_2')['ID_2'].count().reset_index(drop=True)
-    cell_towers_adm_3 = cell_tower_adm.groupby('ID_3')['ID_3'].count().reset_index(drop=True)
-    cell_towers_adm_4 = cell_tower_adm.groupby('ID_4')['ID_4'].count().reset_index(drop=True)
 
-    introversion_adm_1 = cell_tower_adm.groupby('ID_1')['introversion'].sum().reset_index()['introversion'] * (
-    adm_1_pop['Pop_2010'] / cell_towers_adm_1)
-    introversion_adm_2 = cell_tower_adm.groupby('ID_2')['introversion'].sum().reset_index()['introversion'] * (
-    adm_2_pop['Pop_2010'] / cell_towers_adm_2)
-    introversion_adm_3 = cell_tower_adm.groupby('ID_3')['introversion'].sum().reset_index()['introversion'] * (
-    adm_3_pop['Pop_2010'] / cell_towers_adm_3)
-    introversion_adm_4 = cell_tower_adm.groupby('ID_4')['introversion'].sum().reset_index()['introversion'] * (
-    adm_4_pop['Pop_2010'] / cell_towers_adm_4)
-
-    np.savetxt("introversion_adm_1.csv", introversion_adm_1, delimiter=',')
-    np.savetxt("introversion_adm_2.csv", introversion_adm_2, delimiter=',')
-    np.savetxt("introversion_adm_3.csv", introversion_adm_3, delimiter=',')
-    np.savetxt("introversion_adm_4.csv", introversion_adm_4, delimiter=',')
-    
-    
-    
-    
-    
     ''' total degree '''
     total_deg_matrix = total_deg_matrix[list]
     cell_tower_adm['total_deg'] = total_deg_matrix
