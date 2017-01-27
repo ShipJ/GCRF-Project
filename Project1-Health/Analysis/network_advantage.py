@@ -10,7 +10,6 @@ if __name__ == "__main__":
 
     # country = sys.argv[1]
     country = 'IvoryCoast'
-
     path = '/Users/JackShipway/Desktop/UCLProject/Data/%s' % country
 
     # Set known data set values (number of towers, and time length of data)
