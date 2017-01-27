@@ -1,9 +1,27 @@
+''' Computes various poverty metrics, one taking a simply arithmetic mean of a given area, the other choosing
+to focus on the percentage of 'poorest' vs others, magnifying particularly poor areas '''
+
+# Inputs:
+# Outputs:
+
 import pandas as pd
 import numpy as np
 
 if __name__ == "__main__":
 
-    wealth = pd.DataFrame(pd.read_csv("Data/IvoryCoast/DHS/Extracted/Wealth.csv", encoding="utf-8-sig"))
+    # country = sys.argv[1]
+    country = 'IvoryCoast'
+    path = '/Users/JackShipway/Desktop/UCLProject/Data/%s/DHS' % country
+
+    # Set known data set values (number of towers, hourly duration of data)
+    if country == 'Senegal':
+        num_bts, hours = 1668, 8760
+    elif country == 'IvoryCoast':
+        num_bts, hours = 1240, 3360
+    else:
+        num_bts, hours = 10000, 100000
+
+    wealth = pd.DataFrame(pd.read_csv(path+'/Metrics/Poverty/cluster_wealth.csv', encoding="utf-8-sig"))
 
     quintile_poorest = np.zeros(9686)
     for i in range(len(wealth)):
@@ -17,26 +35,23 @@ if __name__ == "__main__":
     poverty_rate = pd.DataFrame(wealth.groupby(by='ClustID')['QuintilePoorest'].mean())
 
 
+
+
+
+
+    ''' Fix this to include all administrative regions, not just 4 '''
+
+
     # Aggregate at the shapefile level - 191 regions rather than 351
-    corresponding_regions = pd.DataFrame(pd.read_csv("Data/IvoryCoast/DHS/ClustIDAdm_4.csv",
-                                                     encoding="utf-8-sig",
+    corresponding_regions = pd.DataFrame(pd.read_csv(path+'Data/IvoryCoast/DHS/ClustIDAdm_4.csv',
+                                                     encoding='utf-8-sig',
                                                      usecols=['ClustID', 'Adm_4ID']))
 
 
     # Remove regions for which there is no data (10 in total)
     poverty_rate = poverty_rate.iloc[corresponding_regions['ClustID']-1]
-
     poverty_rate['Adm_4ID'] = np.array(corresponding_regions['Adm_4ID'])
-
     poverty_rate_adm_4 = poverty_rate.groupby(by='Adm_4ID')['QuintilePoorest'].mean()
-
-    print poverty_rate_adm_4.to_csv('Data/IvoryCoast/DHS/Extracted/FinalWealthIndex.csv', index=True)
-
-
-
-
-
-
 
 
     # subnational_wealth = wealth.groupby(by='HV001')['HV271'].median()
@@ -64,34 +79,3 @@ if __name__ == "__main__":
     # b = np.array(pop_per_191.groupby(by='ID_1')['sum'].sum())
     # a = np.array(a.drop([0]))
     # c = [a[i, 0] / float(b[i]) for i in range(14)]
-    #
-    # # print c
-    #
-    # from scipy.stats.stats import pearsonr
-    #
-    # print admin_level_1
-    #
-    # c = pearsonr(c, admin_level_1[1:])
-    # print c
-    #
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    #
-    # plt.plot(range(15), a, range(15), b)
-    # plt.show()
-    #
-    #
-    # c = pearsonr(a, b)
-    # print c
