@@ -1,9 +1,7 @@
 import pandas as pd
-import re
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
-import math
 from scipy.stats.stats import pearsonr
 
 if __name__ == "__main__":
@@ -407,31 +405,6 @@ if __name__ == "__main__":
         #
 
 
-
-
-    # Re-weight all of the samples to be representative of nationwide population
-
-    # Extract total number of births per household
-
-    # Extract total number of child deaths per household
-
-    # Extract number of months at which each child died
-
-    # neo-natal deaths = proportion of children born who die between 0 and 28 days
-
-    # proportion of children born who die between 1m and 6m
-
-    # proportion of children born who die between 6m and 1y
-
-    # proportion of children born who die between 1y and 5y
-
-    # proportion of children born who die between 5y and 10y
-
-    # proportion of children born who die between 10y and 16y
-
-
-
-# ''' Malaria contracted per cluster '''
 
 
 
