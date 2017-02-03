@@ -8,17 +8,17 @@ if __name__ == "__main__":
 
     ####### Added from other file, to keep dhs metrics all in one place ##########
     # Get wealth index per cluster
-    wealth_index = pd.DataFrame(pd.read_csv("Data/IvoryCoast/DHS/WealthIndex.csv", encoding="utf-8-sig"))
+    wealth_index = pd.DataFrame(pd.read_csv('Data/IvoryCoast/DHS/WealthIndex.csv', encoding='utf-8-sig'))
     cluster_wealth = wealth_index.groupby(by=['ClustNum'])['Score'].median()
 
     # Get total activity per cell tower
-    cell_activity = pd.DataFrame(np.load("Data/IvoryCoast/CDR/Metrics/activity.npy"), columns=['Volume'])
+    cell_activity = pd.DataFrame(np.load('Data/IvoryCoast/CDR/Metrics/activity.npy'), columns=['Volume'])
 
     # Get regions corresponding to each cell tower
-    corresponding_regions = pd.DataFrame(pd.read_csv("Data/CorrespondingSubPref.csv", usecols=['InputID', 'TargetID']))
+    corresponding_regions = pd.DataFrame(pd.read_csv('Data/CorrespondingSubPref.csv', usecols=['InputID', 'TargetID']))
 
     # Population data per cell tower
-    pop_data = pd.DataFrame(pd.read_csv("Data/CorrespondingSubPref.csv"))
+    pop_data = pd.DataFrame(pd.read_csv('Data/CorrespondingSubPref.csv'))
 
     activity = cell_activity['Volume']
     population = pop_data['Population']
